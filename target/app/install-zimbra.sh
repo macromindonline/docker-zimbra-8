@@ -31,7 +31,8 @@ echo
 echo "Extracting Zimbra..."
 mkdir zcs
 tar -C zcs -xvzf zcs.tgz --strip-components=1
-sed 's/9BE6ED79/9BE6/g' zcs/utils/utilfunc.sh
+gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79
+sed -i 's/grep[[:space:]]-w[[:space:]]9BE6ED79/grep -w 9BE6/g' zcs/util/utilfunc.sh
 
 echo
 echo "Installing Zimbra..."
