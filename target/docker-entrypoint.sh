@@ -72,6 +72,9 @@ function setup_environment
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/enable-antispam.sh
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/change-date-pop.sh
 
+        echo "Copy Zimbra.pub file"
+        cp /app/zimbra.pub $ZIMBRA_ENVIRONMENT_PATH/app/
+
         echo "Installing crontab"
         #echo "0 0 * * * /root/enable-antispam.sh" >> /etc/crontab
         #echo "0 0 * * SAT sudo -u zimbra for i in `/opt/zimbra/bin/zmprov -l gaa`; do zmmailbox -z -A -m $i emptyDumpster; done" >> /etc/crontab

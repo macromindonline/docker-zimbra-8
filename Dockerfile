@@ -3,6 +3,8 @@ FROM ubuntu:18.04
 # Update image and install additional packages
 # -----------------------------------------------------------------------------
 ENV DEBIAN_FRONTEND=noninteractive
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+
 RUN \
   apt update && \
   apt install \
@@ -22,6 +24,7 @@ COPY target /
 RUN \
   mkdir /data && \
   chmod 750 /docker-entrypoint.sh
+
 
 # Volumes
 # -----------------------------------------------------------------------------
