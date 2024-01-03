@@ -9,18 +9,19 @@ echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-sele
 
 echo
 echo "Updating environment..."
-apt-get -y update
-apt-get -y install software-properties-common
+apt -y update
+apt -y install software-properties-common
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe"
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe"
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe"
-apt-get -y update
-apt-get -y dist-upgrade
-apt-get -y autoremove
+gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79
+apt -y update
+apt -y dist-upgrade
+apt -y autoremove
 
 echo
 echo "Installing prerequisites..."
-apt-get -y install \
+apt -y install \
     coreutils \
     cron \
     iptables \
