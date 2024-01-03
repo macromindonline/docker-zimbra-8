@@ -17,7 +17,7 @@ RUN \
 
 # Copy prepared files into the image
 # -----------------------------------------------------------------------------
-COPY ../target /
+COPY target /
 
 RUN \
   mkdir /data && \
