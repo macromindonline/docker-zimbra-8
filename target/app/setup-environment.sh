@@ -9,15 +9,15 @@ echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-sele
 
 echo
 echo "Updating environment..."
-apt -y update
-apt -y install software-properties-common
+apt update
+apt install software-properties-common -y
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe"
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe"
 add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe"
 gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79
-apt -y update
-apt -y dist-upgrade
-apt -y autoremove
+apt update
+apt dist-upgrade -y
+apt autoremove -y
 
 echo
 echo "Installing prerequisites..."

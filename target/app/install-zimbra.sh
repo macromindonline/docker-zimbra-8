@@ -31,6 +31,7 @@ echo
 echo "Extracting Zimbra..."
 mkdir zcs
 tar -C zcs -xvzf zcs.tgz --strip-components=1
+sed 's/9BE6ED79/9BE6/g' zcs/utils/utilfunc.sh
 
 echo
 echo "Installing Zimbra..."
