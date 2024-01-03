@@ -32,7 +32,7 @@ echo "Extracting Zimbra..."
 mkdir zcs
 tar -C zcs -xvzf zcs.tgz --strip-components=1
 apt-key add /app/zimbra.pub
-#sed -i 's/grep[[:space:]]-w[[:space:]]9BE6ED79/grep -w 9BE6/g' zcs/util/utilfunc.sh
+sed -i 's/grep[[:space:]]-w[[:space:]]9BE6ED79/grep -w 9BE6/g' zcs/util/utilfunc.sh
 
 echo
 echo "Installing Zimbra..."
@@ -41,7 +41,8 @@ cd zcs
 
 echo
 echo "Retrieving some information needed for further steps..."
-ADMIN_EMAIL=`sudo -u zimbra /opt/zimbra/bin/zmlocalconfig smtp_destination | cut -d ' ' -f3`
+#ADMIN_EMAIL=`sudo -u zimbra /opt/zimbra/bin/zmlocalconfig smtp_destination | cut -d ' ' -f3`
+ADMIN_EMAIL="sysadmin@macromind.net"
 echo "- Admin e-mail address: $ADMIN_EMAIL"
 
 echo
@@ -114,6 +115,10 @@ echo "Disabling Antivirus and Antispam - Using MACROMIND Antispam cluster soluti
 sudo -u zimbra /opt/zimbra/bin/zmprov -l ms `hostname -f` -zimbraServiceEnabled antispam 
 sudo -u zimbra /opt/zimbra/bin/zmprov -l ms `hostname -f` -zimbraServiceEnabled antivirus 
 sudo -u zimbra /opt/zimbra/bin/zmprov -l ms `hostname -f` -zimbraServiceEnabled amavis
+
+echo
+echo "Disabling CBPolicyd - MACROMIND Firewall"
+sudo -u zimbra /opt/zimbra/bin/zmprov ms `hostname -f` -zimbraServiceEnabled cbpolicyd
 
 echo
 echo "Configuring to resolve hostname internally"
