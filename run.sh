@@ -25,7 +25,6 @@ docker run -it \
     -p $IPV4:5222:5222 \
     -p $IPV4:5223:5223 \
     -p $IPV4:7071:7071 \
-    -p $IPV4:7780:7780 \
     --volume $PWD/data:/data \
     --volume /mg/mx:/data/mg/mx \
     --cap-add NET_ADMIN \

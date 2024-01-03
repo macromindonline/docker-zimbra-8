@@ -5,7 +5,6 @@ set -e
 ZIMBRA_ENVIRONMENT_PATH="/data"
 HOSTNAME=$(hostname -a)
 DOMAIN=$(hostname -d)
-# CONTAINER_IP=$(hostname --ip-address)
 CONTAINER_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 
 function prepare_chroot
@@ -108,7 +107,7 @@ function setup_environment
 # 7071/tcp - HTTPS (admin panel, https://<host>/zimbraAdmin)
 # -----------------------------------------------------------------------------
 FIREWALL_ALLOW_UDP_PORTS_IN=${FIREWALL_ALLOW_UDP_PORTS_IN:-}
-FIREWALL_ALLOW_TCP_PORTS_IN=${FIREWALL_ALLOW_TCP_PORTS_IN:-25,80,110,143,443,465,587,993,995,5222,5223,7071,7780}
+FIREWALL_ALLOW_TCP_PORTS_IN=${FIREWALL_ALLOW_TCP_PORTS_IN:-25,80,110,143,443,465,587,993,995,5222,5223,7071}
 
 function configure_firewall
 {
