@@ -46,7 +46,6 @@ function setup_environment
         debootstrap --variant=minbase --arch=amd64 bionic /data http://archive.ubuntu.com/ubuntu/
 
         echo "Running Zimbra installation script (/app/install-zimbra.sh)..."
-        mkdir -p $ZIMBRA_ENVIRONMENT_PATH/app
         mkdir -p $ZIMBRA_ENVIRONMENT_PATH/app/resources
         cp /app/setup-environment.sh $ZIMBRA_ENVIRONMENT_PATH/app/
         cp /app/install-zimbra.sh $ZIMBRA_ENVIRONMENT_PATH/app/
@@ -58,10 +57,8 @@ function setup_environment
 
         echo "Copying customized scripts"
         mkdir -p $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts
-        
         cp /app/certbot-zimbra.sh $ZIMBRA_ENVIRONMENT_PATH/root/
         cp /app/queue-delete.pl $ZIMBRA_ENVIRONMENT_PATH/root/
-
         cp /app/zcs-export.sh $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/
         cp /app/zcs-import.sh $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/
         cp /app/enable-antispam.sh $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/
@@ -70,7 +67,6 @@ function setup_environment
         echo "Setting customized permissions"
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/root/certbot-zimbra.sh
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/root/queue-delete.pl
-	    
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/zcs-export.sh
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/zcs-import.sh
         chmod 750 $ZIMBRA_ENVIRONMENT_PATH/opt/zimbra/scripts/enable-antispam.sh

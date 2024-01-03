@@ -25,7 +25,7 @@ else
         do
             ACCOUNT_NAME=`echo ${ACCOUNT_FILE%.*}`
             echo "Creating account ${ACCOUNT_NAME}"
-            zmprov ca ${ACCOUNT_NAME} ChangeMe@123
+            zmprov ca ${ACCOUNT_NAME} Macromind@123
             echo "Configuring Pop3 download date to ${ACCOUNT_NAME}"
             zmprov ma ${ACCOUNT_NAME} zimbraPrefPop3DownloadSince $(date "+%Y%m%d%H%M%S"Z)
             echo "Force ${ACCOUNT_NAME} to change password at next logon"
