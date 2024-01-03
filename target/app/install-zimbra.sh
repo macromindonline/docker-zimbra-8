@@ -3,7 +3,7 @@
 set -e
 
 ZIMBRA_DOWNLOAD_URL="https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.UBUNTU18_64.20190918004220.tgz"
-ZIMBRA_DOWNLOAD_HASH="28d39a32328db0586d35cc7a461e92a43939aebe6f0ab58ee9225cb8824835db"
+ZIMBRA_DOWNLOAD_HASH="88100cc5f8ffc8a806a7644ea15a4d38afaffeb7ea85ec452cad3a0680c5d46d"
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # abort, if the shell is not attached to a terminal
