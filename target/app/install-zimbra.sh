@@ -105,7 +105,7 @@ sudo -u zimbra /opt/zimbra/bin/zmprov mc default zimbraSmtpRestrictEnvelopeFrom 
 echo
 echo "Installing mail utilities to enable unattended-upgrades to send notifications."
 echo "(Can be done after installing Zimbra only as bsd-mailx pulls in postfix that conflicts with the postfix package deployed by Zimbra.)"
-apt-get install -y bsd-mailx
+apt install bsd-mailx -y
 
 # let the container start Zimbra services next time
 rm -f /.dont_start_zimbra
