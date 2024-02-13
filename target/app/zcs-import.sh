@@ -1,45 +1,70 @@
 #!/bin/bash
 
-if [[ "`whoami`" != "zimbra" ]]
-then
+if [[ "`whoami`" != "zimbra" ]]; then
     echo "Not running as zimbra user..."
     exit
 else
-    echo "Ok, running as zimbra..."
+
     DOMAIN="$1"
 
-    if [[ -z "${DOMAIN}" ]]
-    then
+    if [[ -z "${DOMAIN}" ]]; then
         echo "You need to set the domain to export."
         exit
     else
 
-        zmprov cd ${DOMAIN} zimbraPrefTimeZoneId America/Sao_Paulo zimbraPublicServiceProtocol https zimbraVirtualHostname webmail.${DOMAIN}
-
-        NFS="/mg/mx"
+        SOURCE="/mg/mx/${DOMAIN}/files"
+        IMPORTED="${SOURCE}/imported"
 
         echo
-        echo "Importing data of ${DOMAIN}"
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Importing data of ${DOMAIN}"
 
-        for ACCOUNT_FILE in `ls ${NFS}/${DOMAIN}`
+        echo
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Some adjustments to default settings..."
+        zmprov mcf zimbraPublicServiceHostname $(hostname)
+        zmprov mcf zimbraPublicServiceProtocol https
+        zmprov mcf zimbraPublicServicePort 443
+        
+        zmprov md ${DOMAIN} zimbraPublicServiceHostname $(hostname)
+        zmprov md ${DOMAIN} zimbraPublicServiceProtocol https
+        zmprov md ${DOMAIN} zimbraPublicServicePort 443
+        
+        echo
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Settings OK..."
+
+        #
+        # Em caso de timeout, rodar os seguintes comandos:
+        # zmlocalconfig -e mailboxd_java_heap_memory_percent=40
+        # zmlocalconfig -e mysql_memory_percent=30
+
+        for ACCOUNT_FILE in `ls ${SOURCE}`
         do
             ACCOUNT_NAME=`echo ${ACCOUNT_FILE%.*}`
-            echo "Creating account ${ACCOUNT_NAME}"
-            zmprov ca ${ACCOUNT_NAME} Macromind@123
-            echo "Configuring Pop3 download date to ${ACCOUNT_NAME}"
-            zmprov ma ${ACCOUNT_NAME} zimbraPrefPop3DownloadSince $(date "+%Y%m%d%H%M%S"Z)
-            echo "Force ${ACCOUNT_NAME} to change password at next logon"
-            zmprov ma ${ACCOUNT_NAME} zimbraPasswordMustChange TRUE
-            echo "${ACCOUNT_NAME} => DisableWarnings"
-            zmmailbox -z -m ${ACCOUNT_NAME} addFilterRule "DisableWarnings" active any address "from" all contains "MAILER-DAEMON" discard
-            echo "${ACCOUNT_NAME} => AntispamTitle"
-            zmmailbox -z -m ${ACCOUNT_NAME} addFilterRule "AntispamTitle" active any header "subject" contains "SPAM" fileinto "Junk"
-            echo "${ACCOUNT_NAME} => AntispamUnsubscribe"
-            zmmailbox -z -m ${ACCOUNT_NAME} addFilterRule "AntispamUnsubscribe" active any header "List-Unsubscribe" exists fileinto "Junk"
-            echo "Opening ${ACCOUNT_FILE} and importing to ${ACCOUNT_NAME}"
-            TGZ="${NFS}/${DOMAIN}/${ACCOUNT_FILE}"
-            zmmailbox -z -m ${ACCOUNT_NAME} postRestURL "//?fmt=tgz&resolve=skip" ${TGZ}
-            echo "Done..."
+            ERROR_COUNT=0
+            
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Opening ${ACCOUNT_FILE} and importing into ${ACCOUNT_NAME}"
+            TGZ="${SOURCE}/${ACCOUNT_FILE}"
+
+            while true; do
+
+                echo "[$(date '+%Y-%m-%d %H:%M:%S')] Executing zmmailbox to post file..."
+                OUTPUT=$(zmmailbox -z -m ${ACCOUNT_NAME} -t 0 postRestURL "//?fmt=tgz&resolve=skip" ${TGZ} 2>&1)
+                STATUS=$?
+
+                if [[ $STATUS -eq 0 && ! $OUTPUT =~ "Read timed out" ]]; then
+                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Imported sucessfully, moving to another folder..."
+                    mv ${TGZ} ${IMPORTED}
+                    break
+                else
+                    ((ERROR_COUNT++))
+                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read timed out, trying again - ${ERROR_COUNT}"
+                    sleep 5
+                fi
+            done
+
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Done..."
         done
+
+        echo
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Data successfuly imported of ${DOMAIN}"
     fi
 fi
