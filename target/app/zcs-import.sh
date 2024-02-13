@@ -27,14 +27,13 @@ else
         zmprov md ${DOMAIN} zimbraPublicServiceHostname $(hostname)
         zmprov md ${DOMAIN} zimbraPublicServiceProtocol https
         zmprov md ${DOMAIN} zimbraPublicServicePort 443
+
+        zmlocalconfig -e mailboxd_java_heap_memory_percent=40
+        zmlocalconfig -e mysql_memory_percent=30
+        zmlocalconfig -e socket_so_timeout=3000000       
         
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Settings OK..."
-
-        #
-        # Em caso de timeout, rodar os seguintes comandos:
-        # zmlocalconfig -e mailboxd_java_heap_memory_percent=40
-        # zmlocalconfig -e mysql_memory_percent=30
 
         for ACCOUNT_FILE in `ls ${SOURCE}`
         do
@@ -66,5 +65,6 @@ else
 
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Data successfuly imported of ${DOMAIN}"
+        zmlocalconfig -u socket_so_timeout
     fi
 fi
