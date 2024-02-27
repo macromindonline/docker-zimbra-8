@@ -5,7 +5,7 @@ then
     echo "Not running as zimbra user..."
     exit
 else
-
+    echo "Ok, running as zimbra..."
     DOMAIN="$1"
 
     if [[ -z "${DOMAIN}" ]]
@@ -19,7 +19,9 @@ else
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating directory to domain ${DOMAIN} in ${NFS}/${DOMAIN}"
         SCRIPTS_DIR="${NFS}/${DOMAIN}/scripts"
-        mkdir -p ${SCRIPTS_DIR}
+        if [ ! -d "$SCRIPTS_DIR" ]; then
+         mkdir -p "$SCRIPTS_DIR"
+        fi
 
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Writing a script to easily creation for domain and users in destination server"
@@ -39,9 +41,10 @@ else
 
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Exporting data of ${DOMAIN}"
-
         FILES_DIR="${NFS}/${DOMAIN}/files"
-        mkdir -p ${FILES_DIR}
+        if [ ! -d "$FILES_DIR" ]; then
+         mkdir -p "$FILES_DIR"
+        fi
 
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Some adjustments to default settings..."

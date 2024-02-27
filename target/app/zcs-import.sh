@@ -13,7 +13,14 @@ else
     else
 
         SOURCE="/mg/mx/${DOMAIN}/files"
-        IMPORTED="${SOURCE}/imported"
+        if [ ! -d "$SOURCE" ]; then
+         mkdir -p "$SOURCE"
+        fi
+
+        IMPORTED="${SOURCE}/imported/"
+        if [ ! -d "$IMPORTED" ]; then
+         mkdir -p "$IMPORTED"
+        fi
 
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Importing data of ${DOMAIN}"
@@ -23,23 +30,23 @@ else
         zmprov mcf zimbraPublicServiceHostname $(hostname)
         zmprov mcf zimbraPublicServiceProtocol https
         zmprov mcf zimbraPublicServicePort 443
-        
+
         zmprov md ${DOMAIN} zimbraPublicServiceHostname $(hostname)
         zmprov md ${DOMAIN} zimbraPublicServiceProtocol https
         zmprov md ${DOMAIN} zimbraPublicServicePort 443
 
         zmlocalconfig -e mailboxd_java_heap_memory_percent=40
         zmlocalconfig -e mysql_memory_percent=30
-        zmlocalconfig -e socket_so_timeout=3000000       
-        
+        zmlocalconfig -e socket_so_timeout=3000000
+
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Settings OK..."
 
-        for ACCOUNT_FILE in `ls ${SOURCE}`
+        for ACCOUNT_FILE in $(ls ${SOURCE} | grep -v "^${IMPORTED}$")
         do
             ACCOUNT_NAME=`echo ${ACCOUNT_FILE%.*}`
             ERROR_COUNT=0
-            
+
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Opening ${ACCOUNT_FILE} and importing into ${ACCOUNT_NAME}"
             TGZ="${SOURCE}/${ACCOUNT_FILE}"
 
@@ -50,12 +57,12 @@ else
                 STATUS=$?
 
                 if [[ $STATUS -eq 0 && ! $OUTPUT =~ "Read timed out" ]]; then
-                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Imported sucessfully, moving to another folder..."
+                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ${ACCOUNT_NAME} Imported sucessfully, moving to another folder..."
                     mv ${TGZ} ${IMPORTED}
                     break
                 else
                     ((ERROR_COUNT++))
-                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read timed out, trying again - ${ERROR_COUNT}"
+                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ${ACCOUNT_NAME} Read timed out, trying again - ${ERROR_COUNT}"
                     sleep 5
                 fi
             done
