@@ -42,12 +42,12 @@ else
         echo
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Settings OK..."
 
-        for ACCOUNT_FILE in $(ls ${SOURCE} | grep -v "^${IMPORTED}$")
+        for ACCOUNT_FILE in $(find ${SOURCE} -type f -exec basename {} \;)
         do
             ACCOUNT_NAME=`echo ${ACCOUNT_FILE%.*}`
             ERROR_COUNT=0
 
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Opening ${ACCOUNT_FILE} and importing into ${ACCOUNT_NAME}"
+	    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Opening ${ACCOUNT_FILE} and importing into ${ACCOUNT_NAME}"
             TGZ="${SOURCE}/${ACCOUNT_FILE}"
 
             while true; do
