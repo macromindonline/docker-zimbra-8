@@ -1,0 +1,13 @@
+[Unit]
+Description=Start Zimbra using tmux
+After=network.target
+
+[Service]
+Type=forking
+User=seu_usuario
+ExecStart=/root/zimbra_start.sh
+ExecStop=/usr/bin/tmux kill-session -t zimbra
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
