@@ -5,7 +5,11 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-RUN \
+COPY zimbra.list /etc/apt/sources.list.d/zimbra.list
+COPY GPG-KEY-zimbra /tmp/GPG-KEY-zimbra
+
+RUN apt-key add /tmp/GPG-KEY-zimbra && \
+  rm /tmp/GPG-KEY-zimbra && \
   apt update && \
   apt install \
     debootstrap \
