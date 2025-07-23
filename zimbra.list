@@ -1,3 +1,0 @@
-deb     [arch=amd64] https://repo.zimbra.com/apt/87 bionic zimbra
-deb     [arch=amd64] https://repo.zimbra.com/apt/8815 bionic zimbra
-deb-src [arch=amd64] https://repo.zimbra.com/apt/87 bionic zimbra
