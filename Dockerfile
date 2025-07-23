@@ -5,8 +5,6 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-COPY sources.list /etc/apt/sources.list
-
 RUN  apt update && \
   apt install \
     debootstrap \
