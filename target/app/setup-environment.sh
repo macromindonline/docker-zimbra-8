@@ -9,11 +9,11 @@ echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-sele
 
 echo
 echo "Updating environment..."
-apt update
-apt install software-properties-common -y
-add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe"
-add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe"
-add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe"
+#apt update
+#apt install software-properties-common -y
+#add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe"
+#add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe"
+#add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe"
 apt update
 apt dist-upgrade -y
 apt autoremove -y

@@ -5,16 +5,21 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-RUN  apt update && \
-  apt install \
-    debootstrap \
-    dnsmasq \
-    iproute2 \
-    iptables \
-    sed -y && \
-  apt autoremove -y && \
-  apt clean -y && \
-  rm -rf /var/lib/apt/lists/*
+RUN apt update && \
+   apt install software-properties-common -y && \
+   add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe" && \
+   add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe" && \
+   add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe" && \
+   apt update && \
+   apt install \
+   debootstrap \
+   dnsmasq \
+   iproute2 \
+   iptables \
+   sed -y && \
+   apt autoremove -y && \
+   apt clean -y && \
+   rm -rf /var/lib/apt/lists/*
 
 # Copy prepared files into the image
 # -----------------------------------------------------------------------------

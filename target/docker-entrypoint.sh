@@ -44,10 +44,6 @@ function setup_environment
 
         echo "Installing minimalistic Ubuntu 18.04 LTS (bionic)..."
         debootstrap --variant=minbase --arch=amd64 bionic /data http://archive.ubuntu.com/ubuntu/
-	apt install software-properties-common -y
-	add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe"
-	add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe"
-	add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe"
 
         echo "Running Zimbra installation script (/app/install-zimbra.sh)..."
         mkdir -p $ZIMBRA_ENVIRONMENT_PATH/app/resources
