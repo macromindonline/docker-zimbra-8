@@ -5,12 +5,12 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 5234D2B73B6996C7 && \ 
-   apt update && \
+RUN apt update && \
    apt install software-properties-common -y && \
    add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic          main restricted universe" && \
    add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-updates  main restricted universe" && \
    add-apt-repository --yes "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted universe" && \
+   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 5234D2B73B6996C7 && \
    apt update && \
    apt install \
    debootstrap \
