@@ -9,6 +9,11 @@ IPV4=`ip addr show $(ip route | awk '/default/ { print $5 }') | grep "inet" | he
 grep -v '^#' env.prod
 export $(grep -v '^#' env.prod | xargs)
 
+EXTRA_VOLUMES=()
+if [ -d "/mg/mx" ]; then
+    EXTRA_VOLUMES+=(--volume /mg/mx:/data/mg/mx)
+fi
+
 docker run -it \
     --rm \
     --hostname $HOSTNAME \
@@ -26,7 +31,7 @@ docker run -it \
     -p $IPV4:5223:5223 \
     -p $IPV4:7071:7071 \
     --volume $PWD/data:/data \
-    --volume /mg/mx:/data/mg/mx \
+    "${EXTRA_VOLUMES[@]}" \
     --cap-add NET_ADMIN \
     --cap-add SYS_ADMIN \
     --cap-add SYS_PTRACE \
