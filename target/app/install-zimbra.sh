@@ -45,42 +45,30 @@ echo "Retrieving some information needed for further steps..."
 ADMIN_EMAIL="sysadmin@macromind.net"
 echo "- Admin e-mail address: $ADMIN_EMAIL"
 
-# --- auditswatch: fonte oficial -> mirror GitHub (MACROMIND) -> aviso ---------
-mkdir -p /install/auditswatch
-cd /install/auditswatch
-
+# --- auditswatch: oficial -> mirror GitHub -> aviso (à prova de set -e) ---
+mkdir -p /install/auditswatch && cd /install/auditswatch
 OFICIAL="https://bugzilla-attach.zimbra.com/attachment.cgi?id=66723"
 MIRROR="https://raw.githubusercontent.com/macromindonline/docker-zimbra-8/refs/heads/main/target/app/auditswatch"
-
-# valida que o arquivo baixado e realmente o script Perl (nao uma pagina de erro)
 _aud_ok() { [ -s auditswatch ] && head -1 auditswatch | grep -q '^#!.*perl'; }
 
 echo "Baixando auditswatch (fonte oficial)..."
-wget -q -O auditswatch "$OFICIAL"
-if _aud_ok; then
-    echo "auditswatch: baixado da fonte oficial."
-else
-    echo "Fonte oficial indisponivel; tentando mirror MACROMIND (GitHub)..."
-    wget -q -O auditswatch "$MIRROR"
-fi
+wget -q -O auditswatch "$OFICIAL" || true          # <-- || true impede o set -e de matar
+_aud_ok || { echo "Oficial falhou; tentando mirror GitHub..."; wget -q -O auditswatch "$MIRROR" || true; }
 
 if _aud_ok; then
     mv auditswatch /opt/zimbra/libexec/auditswatch
     chown root:root /opt/zimbra/libexec/auditswatch
     chmod 0755 /opt/zimbra/libexec/auditswatch
-
-    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_notice_user=$ADMIN_EMAIL
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_notice_user=sysadmin@macromind.net
     sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_threshold_seconds=3600
     sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ipacct_threshold=10
     sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_acct_threshold=15
     sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ip_threshold=20
     sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_total_threshold=100
     sudo -u zimbra -- /opt/zimbra/bin/zmauditswatchctl start
-    echo "auditswatch: instalado e iniciado."
+    echo "auditswatch OK"
 else
-    echo "AVISO: auditswatch indisponivel (oficial e mirror falharam)."
-    echo "       Prosseguindo a instalacao SEM o detector de brute-force."
-    echo "       Instale depois manualmente se desejar."
+    echo "AVISO: auditswatch indisponivel; seguindo sem ele."
 fi
 
 echo
