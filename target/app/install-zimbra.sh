@@ -45,44 +45,43 @@ echo "Retrieving some information needed for further steps..."
 ADMIN_EMAIL="sysadmin@macromind.net"
 echo "- Admin e-mail address: $ADMIN_EMAIL"
 
-echo
-echo "Configuring Zimbra's brute-force detector (auditswatch) to send notifications to $ADMIN_EMAIL..."
-# download and install missing auditswatch file
-# ----------------------------------------------------------------------------------------------------------
+# --- auditswatch: fonte oficial -> mirror GitHub (MACROMIND) -> aviso ---------
 mkdir -p /install/auditswatch
 cd /install/auditswatch
 
-# em vez de:  wget -O auditswatch http://bugzilla-attach.zimbra.com/attachment.cgi?id=66723
-if wget -O auditswatch "https://bugzilla-attach.zimbra.com/attachment.cgi?id=66723" && head -1 auditswatch | grep -q '#!'; then
+OFICIAL="https://bugzilla-attach.zimbra.com/attachment.cgi?id=66723"
+MIRROR="https://raw.githubusercontent.com/macromindonline/docker-zimbra-8/refs/heads/main/target/app/auditswatch"
+
+# valida que o arquivo baixado e realmente o script Perl (nao uma pagina de erro)
+_aud_ok() { [ -s auditswatch ] && head -1 auditswatch | grep -q '^#!.*perl'; }
+
+echo "Baixando auditswatch (fonte oficial)..."
+wget -q -O auditswatch "$OFICIAL"
+if _aud_ok; then
+    echo "auditswatch: baixado da fonte oficial."
+else
+    echo "Fonte oficial indisponivel; tentando mirror MACROMIND (GitHub)..."
+    wget -q -O auditswatch "$MIRROR"
+fi
+
+if _aud_ok; then
     mv auditswatch /opt/zimbra/libexec/auditswatch
     chown root:root /opt/zimbra/libexec/auditswatch
     chmod 0755 /opt/zimbra/libexec/auditswatch
-    # ... os zmlocalconfig do swatch + zmauditswatchctl start ...
+
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_notice_user=$ADMIN_EMAIL
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_threshold_seconds=3600
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ipacct_threshold=10
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_acct_threshold=15
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ip_threshold=20
+    sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_total_threshold=100
+    sudo -u zimbra -- /opt/zimbra/bin/zmauditswatchctl start
+    echo "auditswatch: instalado e iniciado."
 else
-    echo "AVISO: auditswatch indisponivel; seguindo sem ele."
+    echo "AVISO: auditswatch indisponivel (oficial e mirror falharam)."
+    echo "       Prosseguindo a instalacao SEM o detector de brute-force."
+    echo "       Instale depois manualmente se desejar."
 fi
-
-
-# configure auditswatch
-# ----------------------------------------------------------------------------------------------------------
-# The email address that we want to be worn when all the conditions happens.
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_notice_user=$ADMIN_EMAIL
-# The duration within the thresholds below refer to (in seconds)
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_threshold_seconds=3600
-# IP/Account hash check which warns on 10 auth failures from an IP/Account combo within the specified time.
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ipacct_threshold=10
-# Account check which warns on 15 auth failures from any IP within the specified time.
-# Attempts to detect a distributed hijack based attack on a single account.
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_acct_threshold=15
-# IP check which warns on 20 auth failures to any account within the specified time.
-# Attempts to detect a single host based attack across multiple accounts.
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_ip_threshold=20
-# Total auth failure check which warns on 100 auth failures from any IP to any account within the specified time.
-# The recommended value on this is guestimated at 1% of active accounts for the Mailbox.
-sudo -u zimbra -- /opt/zimbra/bin/zmlocalconfig -e zimbra_swatch_total_threshold=100
-# check whether the service starts as expected
-# ----------------------------------------------------------------------------------------------------------
-sudo -u zimbra -- /opt/zimbra/bin/zmauditswatchctl start
 
 echo
 echo "Removing Zimbra installation files..."
