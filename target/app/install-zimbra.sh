@@ -51,10 +51,17 @@ echo "Configuring Zimbra's brute-force detector (auditswatch) to send notificati
 # ----------------------------------------------------------------------------------------------------------
 mkdir -p /install/auditswatch
 cd /install/auditswatch
-wget -O auditswatch http://bugzilla-attach.zimbra.com/attachment.cgi?id=66723
-mv auditswatch  /opt/zimbra/libexec/auditswatch
-chown root:root /opt/zimbra/libexec/auditswatch
-chmod 0755 /opt/zimbra/libexec/auditswatch
+
+# em vez de:  wget -O auditswatch http://bugzilla-attach.zimbra.com/attachment.cgi?id=66723
+if wget -O auditswatch "https://bugzilla-attach.zimbra.com/attachment.cgi?id=66723" && head -1 auditswatch | grep -q '#!'; then
+    mv auditswatch /opt/zimbra/libexec/auditswatch
+    chown root:root /opt/zimbra/libexec/auditswatch
+    chmod 0755 /opt/zimbra/libexec/auditswatch
+    # ... os zmlocalconfig do swatch + zmauditswatchctl start ...
+else
+    echo "AVISO: auditswatch indisponivel; seguindo sem ele."
+fi
+
 
 # configure auditswatch
 # ----------------------------------------------------------------------------------------------------------
